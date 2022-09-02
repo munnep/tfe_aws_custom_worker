@@ -67,7 +67,7 @@ vpc_cidr                 = "10.234.0.0/16"                      # subnet mask th
 ami                      = "ami-09f0506c9ef0fb473"              # AMI of the Ubuntu image  
 rds_password             = "Password#1"                         # password used for the RDS environment
 filename_license         = "license.rli"                        # filename of your TFE license stored under ./files
-dns_hostname             = "patrick-tfe3"                       # DNS hostname for the TFE
+dns_hostname             = "patrick-tfe5"                       # DNS hostname for the TFE
 dns_zonename             = "bg.hashicorp-success.com"           # DNS zone name to be used
 tfe_password             = "Password#1"                         # TFE password for the dashboard and encryption of the data
 certificate_email        = "patrick.munne@hashicorp.com"        # Your email address used by TLS certificate registration
@@ -107,7 +107,7 @@ admin user with default password
 An organization called test  
 A workspace called test-custom-worker  
 ```sh
-ssh ubuntu@patrick-tfe7.bg.hashicorp-success.com bash /tmp/tfe_setup.sh
+ssh ubuntu@patrick-tfe5.bg.hashicorp-success.com bash /tmp/tfe_setup.sh
 ```
 - go to the directory terraform-example
 ```
