@@ -1,10 +1,10 @@
 terraform {
   cloud {
-    hostname     = "patrick-tfe9.bg.hashicorp-success.com"
+    hostname = "patrick-tfe5.bg.hashicorp-success.com"
     organization = "test"
 
     workspaces {
-      name = "test-patrick-worker"
+      name = "test-custom-worker"
     }
   }
 }

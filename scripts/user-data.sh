@@ -13,7 +13,7 @@ done
 
 # install monitoring tools
 apt-get update
-apt-get install -y ctop net-tools sysstat
+apt-get install -y ctop net-tools sysstat jq
 
 # Set swappiness
 if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
@@ -225,13 +225,13 @@ curl \
   --data '{"data": { "type": "organizations", "attributes": {"name": "test", "email": "${certificate_email}"}}}' \
   https://${dns_hostname}.${dns_zonename}/api/v2/organizations
 
-# Create a cli-driven workspace named test-worker
+# Create a cli-driven workspace named test-custom-worker
 curl \
   --header "Authorization: Bearer \$TOKEN" \
   --header "Content-Type: application/vnd.api+json" \
   --request POST \
-  --data `{"data": {"attributes": {"name": "test-custome-worker", "resource-count": 0, "updated-at": "2017-11-29T19:18:09.976Z"}, "type": "workspaces"}}` \
-  https://app.terraform.io/api/v2/organizations/my-organization/workspaces
+  --data '{"data": {"attributes": {"name": "test-custom-worker", "resource-count": 0, "updated-at": "2017-11-29T19:18:09.976Z"}, "type": "workspaces"}}' \
+  https://${dns_hostname}.${dns_zonename}/api/v2/organizations/test/workspaces
 EOF
 
 # Get the public IP of the instance

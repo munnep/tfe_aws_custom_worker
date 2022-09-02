@@ -1,8 +1,6 @@
-# Terraform Enterprise online installation with External Services (S3 + PostgreSQL) custom worker image
+# Terraform Enterprise online installation with a custom worker image
 
-terraform apply -replace=aws_instance.tfe_server -replace=aws_ebs_volume.tfe_docker -replace=aws_ebs_volume.swap --auto-approve
-
-With this repository you will be able to do a TFE (Terraform Enterprise) online installation on AWS with external services for storage in the form of S3 and PostgreSQL and a valid certificate with a custom worker
+With this repository you will be able to do a TFE (Terraform Enterprise) online installation on AWS with a custom worker
 
 The Terraform code will do the following steps
 
@@ -14,6 +12,8 @@ The Terraform code will do the following steps
 - create roles/profiles for the TFE instance to access S3 buckets
 - Create a EC2 instance on which the TFE online installation will be performed
 - Create a custom work that has the Azure-cli installed which will be the default
+
+The TFE installation is based on the following github repository: https://github.com/munnep/TFE_aws_external
 
 # Diagram
 
@@ -46,11 +46,11 @@ Alter the Dockerfile under `files/Dockerfile` to match how you would want the wo
 
 - Clone the repository to your local machine
 ```
-git clone https://github.com/munnep/TFE_aws_external.git
+git clone https://github.com/munnep/tfe_aws_custom_worker.git
 ```
 - Go to the directory
 ```
-cd TFE_aws_external
+cd tfe_aws_custom_worker
 ```
 - Set your AWS credentials
 ```
@@ -71,6 +71,7 @@ dns_hostname             = "patrick-tfe3"                       # DNS hostname f
 dns_zonename             = "bg.hashicorp-success.com"           # DNS zone name to be used
 tfe_password             = "Password#1"                         # TFE password for the dashboard and encryption of the data
 certificate_email        = "patrick.munne@hashicorp.com"        # Your email address used by TLS certificate registration
+tfe_release_sequence     = ""                                   # sequence version of TFE to install
 public_key               = "ssh-rsa AAAAB3Nz"                   # The public key for you to connect to the server over SSH
 ```
 - Terraform initialize
@@ -85,22 +86,63 @@ terraform plan
 ```
 terraform apply
 ```
-- Terraform output should create 33 resources and show you the public dns string you can use to connect to the TFE instance
+- Terraform output should create 34 resources and show you the public dns string you can use to connect to the TFE instance
 ```
-Apply complete! Resources: 33 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 34 added, 0 changed, 0 destroyed.
 
 Outputs:
 
-ssh_tfe_server = "ssh ubuntu@patrick-tfe3.bg.hashicorp-success.com"
+ssh_tfe_server = "ssh ubuntu@patrick-tfe5.bg.hashicorp-success.com"
 ssh_tfe_server_ip = "ssh ubuntu@13.51.23.34"
-tfe_appplication = "https://patrick-tfe3.bg.hashicorp-success.com"
-tfe_dashboard = "https://patrick-tfe3.bg.hashicorp-success.com:8800"
+tfe_appplication = "https://patrick-tfe5.bg.hashicorp-success.com"
+tfe_dashboard = "https://patrick-tfe5.bg.hashicorp-success.com:8800"
 ```
-- Connect to the TFE dashboard. This could take 10 minutes before fully functioning
-![](media/20220516105301.png)   
-- Click on the open button to create your organization and workspaces
 
-terraform apply -replace
+## Automated step to configure the environment
+
+
+
+- Run the following script. This step will create the following  
+admin user with default password  
+An organization called test  
+A workspace called test-custom-worker  
+```sh
+ssh ubuntu@patrick-tfe7.bg.hashicorp-success.com bash /tmp/tfe_setup.sh
+```
+- go to the directory terraform-example
+```
+cd terraform-example
+```
+- Make sure the `main.tf` reflects your hostname 
+- run `terraform login` for the api token to use
+```
+terraform login <dns_of_your_tfe_environment>
+```
+- run terraform init
+```
+terraform init
+```
+- run terraform apply
+```
+terraform apply
+```
+- You should see the output of the azure cli version installed on the Terraform Custom Worker
+```
+null_resource.test: Provisioning with 'local-exec'...
+null_resource.test (local-exec): Executing: ["/bin/sh" "-c" "az --version"]
+null_resource.test (local-exec): WARNING: You have 1 updates available.
+
+null_resource.test (local-exec): Please let us know how we are doing: https://aka.ms/azureclihats
+null_resource.test (local-exec): and let us know if you're interested in trying out our newest features: https://aka.ms/CLIUXstudy
+null_resource.test (local-exec): azure-cli                         2.39.0
+
+null_resource.test (local-exec): core                              2.39.0
+null_resource.test (local-exec): telemetry                          1.0.6 *
+
+null_resource.test (local-exec): Dependencies:
+null_resource.test (local-exec): msal                            1.18.0b1
+null_resource.test (local-exec): azure-mgmt-resource             21.1.0b1
+```
 
 
 # TODO
@@ -123,5 +165,8 @@ terraform apply -replace
 - [x] build network according to the diagram
 - [x] test it manually
 - [x] install TFE
+- [x] Dockerfile for the custom worker
+- [x] configure TFE to use the customer worker
+- [x] test example to test the custom worker  
 
 
