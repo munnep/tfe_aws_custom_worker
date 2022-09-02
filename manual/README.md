@@ -44,7 +44,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y azure-cli
 ```
-- create the docker image
+- create the docker image azure-worker
 sudo docker build -t patrick .
 - Login to the TFE dashboard
 - change the value from default worker to custom worker and name it `patrick:latest`  
